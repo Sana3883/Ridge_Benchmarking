@@ -1,0 +1,38 @@
+import sklearn
+import time
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import RidgeCV
+from threadpoolctl import threadpool_info
+from pprint import pprint
+import os
+
+print("sklearn version**********")
+print(sklearn.__version__)
+
+import numpy as np
+print("***the current state of the threadpool-enabled runtime libraries that are loaded ")
+pprint(threadpool_info())
+
+def my_func_new_1():       
+    
+    Movie_Data= np.load('Data_Season2_shift4_sub2.npy', allow_pickle=True)
+    fMRI_Data= np.load('/mnt/lustre/sahmadi/Sub2_Full_T2.npy', allow_pickle=True)
+
+    Movie_Data= np.vstack(Movie_Data)
+    fMRI_Data= np.vstack(fMRI_Data)
+
+    x_train,x_test, y_train, y_test = train_test_split(Movie_Data[0:1000,0:2000], fMRI_Data[0:1000,0:2000], test_size=0.1)
+    print(x_train.shape,x_test.shape, y_train.shape, y_test.shape)
+
+
+    start = time.time()
+    print(start)     
+    R=RidgeCV(alphas=[0.1, 1, 100,  200, 300, 400, 600,  800, 900, 1000, 1200], gcv_mode='svd').fit(x_train, y_train)   
+    stop = time.time()
+    print(stop)
+    print(f"******%%%%%%****************************Training time: {stop - start}s")
+    
+if __name__ == "__main__":
+    my_func_new_1()
+
+
